@@ -66,7 +66,7 @@ The application uses a pre-trained Keras model (`DermAI.keras`) based on ResNet5
 
 ## Important Notes
 
-⚠️ **Medical Disclaimer**: This application is for educational and informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified dermatologist for accurate diagnosis and treatment of skin conditions.
+**Medical Disclaimer**: This application is for educational and informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified dermatologist for accurate diagnosis and treatment of skin conditions.
 
 ## Requirements
 
@@ -77,7 +77,4 @@ See `requirements.txt` for the complete list of dependencies. Main dependencies 
 - Pillow 12.0.0
 - NumPy 2.3.5
 
-## License
-
-[Add your license here]
 

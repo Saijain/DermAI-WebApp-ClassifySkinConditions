@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DermAI - Your Friendly Skin Health Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+            scroll-behavior: smooth;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .logo-text {
+                font-size: 2em;
+                letter-spacing: 4px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .step {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .step-number {
+                margin: 0 auto 15px;
+            }
+
+            .upload-area {
+                padding: 40px 15px;
+            }
+
+            .result-card {
+                padding: 25px;
+            }
+        }
+
+        .container {
+            background: linear-gradient(145deg, #1a1a1a 0%, #1f1f1f 100%);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 
+                        0 2px 8px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 50px;
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+        }
+
+        .logo-text {
+            font-size: 3em;
+            font-weight: 300;
+            background: linear-gradient(135deg, #e0e0e0 0%, #b0b0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .logo-tagline {
+            color: #888;
+            font-size: 0.85em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .about-section {
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid #333;
+        }
+
+        .about-section h2 {
+            color: #e0e0e0;
+            font-size: 1.8em;
+            font-weight: 300;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .about-section p {
+            color: #b0b0b0;
+            line-height: 1.8;
+            font-size: 0.95em;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .about-section ul {
+            color: #b0b0b0;
+            line-height: 1.8;
+            font-size: 0.95em;
+            margin-left: 20px;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .about-section li {
+            margin-bottom: 8px;
+        }
+
+        .how-it-works-section {
+            margin-bottom: 60px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid #333;
+        }
+
+        .how-it-works-section h2 {
+            color: #e0e0e0;
+            font-size: 1.8em;
+            font-weight: 300;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 25px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(34, 34, 34, 0.9) 0%, rgba(42, 42, 42, 0.7) 100%);
+            border-left: 3px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .step:hover {
+            background: linear-gradient(135deg, rgba(37, 37, 37, 0.95) 0%, rgba(45, 45, 45, 0.8) 100%);
+            border-left-color: #f0f0f0;
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%);
+            color: #0a0a0a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover .step-number {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            color: #e0e0e0;
+            font-size: 1.2em;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            color: #b0b0b0;
+            line-height: 1.8;
+            font-size: 0.95em;
+            font-weight: 300;
+        }
+
+        .step-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+            opacity: 0.8;
+        }
+
+        .arrow-down {
+            text-align: center;
+            color: #666;
+            font-size: 2em;
+            margin: -10px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+
+        .tips-box {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 3px solid #e0e0e0;
+        }
+
+        .tips-box h3 {
+            color: #e0e0e0;
+            font-size: 1em;
+            font-weight: 400;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tips-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-box li {
+            color: #b0b0b0;
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .tips-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #e0e0e0;
+            font-weight: 400;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 400;
+        }
+
+        .welcome-text {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 10px;
+            font-weight: 300;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, rgba(34, 34, 34, 0.8) 0%, rgba(42, 42, 42, 0.6) 100%);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: linear-gradient(135deg, rgba(37, 37, 37, 0.9) 0%, rgba(45, 45, 45, 0.7) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .upload-area:hover::before {
+            left: 100%;
+        }
+
+        .upload-area.dragover {
+            border-color: #e0e0e0;
+            background: linear-gradient(135deg, rgba(42, 42, 42, 0.95) 0%, rgba(50, 50, 50, 0.8) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 12px 32px rgba(224, 224, 224, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 4.5em;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .upload-text {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .upload-hint {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        .preview-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .preview-section.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .image-preview {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5),
+                        0 2px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .image-preview img {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .image-preview:hover img {
+            transform: scale(1.02);
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #e0e0e0 0%, #c0c0c0 100%);
+            color: #0a0a0a;
+            border: none;
+            padding: 16px 48px;
+            font-size: 0.85em;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analyze-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .analyze-btn:hover {
+            background: linear-gradient(135deg, #f0f0f0 0%, #d0d0d0 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .analyze-btn:active {
+            background: linear-gradient(135deg, #d0d0d0 0%, #b0b0b0 100%);
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .analyze-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #0a0a0a 0%, #151515 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                        0 2px 8px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideInFromRight 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .result-title {
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            font-weight: 400;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-confidence {
+            font-size: 3em;
+            font-weight: 300;
+            margin: 20px 0;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #b0b0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: scaleIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+        }
+
+        .result-disease {
+            font-size: 1.8em;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+        }
+
+        .disease-info-section {
+            background: linear-gradient(135deg, rgba(34, 34, 34, 0.9) 0%, rgba(42, 42, 42, 0.7) 100%);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 3px solid #e0e0e0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            animation: slideInFromRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .disease-info-section:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .disease-info-section h3 {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85em;
+        }
+
+        .disease-info-section p {
+            color: #b0b0b0;
+            line-height: 1.8;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .treatment-section {
+            background: linear-gradient(135deg, rgba(34, 34, 34, 0.9) 0%, rgba(42, 42, 42, 0.7) 100%);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 3px solid #e0e0e0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            animation: slideInFromRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .treatment-section:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .treatment-section h3 {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .treatment-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .treatment-list li {
+            padding: 12px 0;
+            padding-left: 30px;
+            color: #b0b0b0;
+            line-height: 1.8;
+            font-size: 0.95em;
+            position: relative;
+            border-bottom: 1px solid #333;
+            font-weight: 300;
+        }
+
+        .treatment-list li:last-child {
+            border-bottom: none;
+        }
+
+        .treatment-list li:before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #e0e0e0;
+            font-weight: 300;
+            font-size: 1em;
+        }
+
+        .consult-section {
+            background: linear-gradient(135deg, rgba(34, 34, 34, 0.9) 0%, rgba(42, 42, 42, 0.7) 100%);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 3px solid #e0e0e0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            animation: slideInFromRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .consult-section:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .consult-section.urgent {
+            background: linear-gradient(135deg, rgba(42, 26, 26, 0.95) 0%, rgba(52, 30, 30, 0.8) 100%);
+            border-left: 3px solid #ff4444;
+            animation: pulse 2s infinite, slideInFromRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.3);
+        }
+
+        .consult-section h3 {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .consult-section.urgent h3 {
+            color: #ff6666;
+        }
+
+        .consult-section p {
+            color: #b0b0b0;
+            line-height: 1.8;
+            font-size: 0.95em;
+            font-weight: 300;
+        }
+
+        .predictions-list {
+            background: linear-gradient(135deg, rgba(34, 34, 34, 0.9) 0%, rgba(42, 42, 42, 0.7) 100%);
+            border-radius: 8px;
+            padding: 25px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .predictions-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .predictions-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .predictions-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .predictions-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .predictions-list h3 {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(34, 34, 34, 0.7) 100%);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInFromRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+
+        .prediction-item:nth-child(1) { animation-delay: 0.1s; }
+        .prediction-item:nth-child(2) { animation-delay: 0.2s; }
+        .prediction-item:nth-child(3) { animation-delay: 0.3s; }
+        .prediction-item:nth-child(4) { animation-delay: 0.4s; }
+        .prediction-item:nth-child(5) { animation-delay: 0.5s; }
+
+        .prediction-item:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, rgba(37, 37, 37, 0.95) 0%, rgba(45, 45, 45, 0.8) 100%);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .prediction-item.top {
+            border-left: 3px solid #e0e0e0;
+            background: linear-gradient(135deg, rgba(37, 37, 37, 0.95) 0%, rgba(45, 45, 45, 0.8) 100%);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .prediction-disease {
+            font-weight: 400;
+            color: #e0e0e0;
+            flex: 1;
+        }
+
+        .prediction-confidence {
+            font-weight: 300;
+            color: #e0e0e0;
+            font-size: 1em;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(34, 34, 34, 0.7) 100%);
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .loading.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .loading-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin: 20px auto;
+            max-width: 300px;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e0e0e0, #b0b0b0, #e0e0e0);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #e0e0e0;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(224, 224, 224, 0.3);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #b0b0b0;
+            font-size: 0.9em;
+            font-weight: 300;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, rgba(42, 26, 26, 0.95) 0%, rgba(52, 30, 30, 0.8) 100%);
+            color: #ff6666;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 3px solid #ff4444;
+            display: none;
+            font-weight: 300;
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.3);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .disclaimer {
+            background: linear-gradient(135deg, rgba(34, 34, 34, 0.9) 0%, rgba(42, 42, 42, 0.7) 100%);
+            border-left: 3px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-size: 0.85em;
+            color: #b0b0b0;
+            line-height: 1.8;
+            font-weight: 300;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .disclaimer strong {
+            color: #e0e0e0;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-text">DermAI</div>
+            <div class="logo-tagline">Skin Health Assistant</div>
+        </div>
+
+        <div class="about-section">
+            <h2>About DermAI</h2>
+            <p><strong style="color: #ff6666; font-size: 1.1em;">IMPORTANT: DermAI does NOT provide medical diagnoses.</strong></p>
+            <p>DermAI is an AI-powered skin health analysis tool designed to encourage proactive dermatological care. Many people overlook or delay addressing skin concerns, often because they're unsure if a condition warrants professional attention. DermAI helps bridge this gap by providing preliminary insights that encourage you to seek professional evaluation.</p>
+            <p><strong>Encouraging Professional Care:</strong> DermAI is specifically designed to encourage more frequent dermatologist visits and help identify skin problems that might otherwise go unchecked. By providing accessible, preliminary information, we aim to reduce barriers to seeking professional care and help you make informed decisions about when to see a dermatologist. Early detection and professional evaluation are crucial for effective treatment of many skin conditions.</p>
+            <p><strong>Important:</strong> This tool is for informational purposes only and should never replace professional medical advice. DermAI does NOT diagnose, replace medical evaluation, provide treatment, or guarantee accuracy. Always consult with a qualified dermatologist for proper diagnosis and treatment, especially for serious or persistent skin concerns.</p>
+        </div>
+
+        <div class="how-it-works-section">
+            <h2>How It Works</h2>
+            <p style="text-align: center; color: #b0b0b0; margin-bottom: 20px; font-size: 0.95em;">Follow these steps to get AI-powered insights about your skin condition</p>
+            
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Upload Your Image</div>
+                        <div class="step-description">Upload a clear, well-lit photo of the skin area. Drag and drop or click to browse.</div>
+                    </div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">AI Analysis</div>
+                        <div class="step-description">Our AI model analyzes your image using deep learning technology trained on thousands of dermatological images. Analysis takes just a few seconds.</div>
+                    </div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Get Results</div>
+                        <div class="step-description">Receive detailed results including the most likely condition, confidence level, treatment tips, and guidance on when to consult a dermatologist.</div>
+                    </div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">Take Action</div>
+                        <div class="step-description">Use the insights to make informed decisions. Remember: DermAI provides preliminary information only. Always consult a qualified dermatologist for proper diagnosis and treatment.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips-box">
+                <h3>Tips for Best Results</h3>
+                <ul>
+                    <li>Use good lighting - natural light works best</li>
+                    <li>Ensure the skin area is in focus and clearly visible</li>
+                    <li>Remove any filters or effects from the image</li>
+                    <li>Take the photo from a reasonable distance (not too close, not too far)</li>
+                    <li>Make sure the image file is under 16MB</li>
+                    <li>Supported formats: JPG, PNG, GIF, BMP</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>DermAI</h1>
+            <p class="subtitle">Your Friendly Skin Health Assistant</p>
+            <p class="welcome-text">Upload a skin image and get instant AI-powered insights to help guide your next steps</p>
+        </div>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">+</div>
+            <div class="upload-text">Click to upload or drag and drop</div>
+            <div class="upload-hint">Supports JPG, PNG, GIF, BMP (Max 16MB)</div>
+            <input type="file" id="imageInput" accept="image/*">
+        </div>
+
+        <div class="preview-section" id="previewSection">
+            <div class="image-preview">
+                <img id="previewImage" src="" alt="Preview">
+            </div>
+            <button class="analyze-btn" id="analyzeBtn">Analyze Image</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing your image with AI...</p>
+            <div class="loading-progress">
+                <div class="loading-progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="result-card">
+                <div class="result-title">Most Likely Condition</div>
+                <div class="result-disease" id="predictedDisease"></div>
+                <div class="result-confidence" id="confidence">0%</div>
+                <div>Confidence Level</div>
+            </div>
+
+            <div class="disease-info-section" id="diseaseInfoSection">
+                <h3>About This Condition</h3>
+                <p id="diseaseDescription"></p>
+            </div>
+
+            <div class="treatment-section" id="treatmentSection">
+                <h3>Treatment & Care Tips</h3>
+                <ul class="treatment-list" id="treatmentList"></ul>
+            </div>
+
+            <div class="consult-section" id="consultSection">
+                <h3>When to See a Dermatologist</h3>
+                <p id="consultDerm"></p>
+            </div>
+
+            <div class="predictions-list">
+                <h3>All Predictions</h3>
+                <div id="predictionsList"></div>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <strong>Important Medical Disclaimer:</strong> This tool is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified healthcare provider or dermatologist for any health concerns. If you have a medical emergency, call emergency services immediately.
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const previewSection = document.getElementById('previewSection');
+        const previewImage = document.getElementById('previewImage');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultsSection = document.getElementById('resultsSection');
+        const predictionsList = document.getElementById('predictionsList');
+        const diseaseInfoSection = document.getElementById('diseaseInfoSection');
+        const treatmentSection = document.getElementById('treatmentSection');
+        const consultSection = document.getElementById('consultSection');
+        const progressBar = document.getElementById('progressBar');
+
+        let selectedFile = null;
+        let progressInterval = null;
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        // File input change
+        imageInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showError('Please select an image file.');
+                return;
+            }
+
+            selectedFile = file;
+            errorMessage.classList.remove('show');
+            resultsSection.classList.remove('show');
+
+            // Show preview with smooth animation
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewSection.classList.add('show');
+                // Smooth scroll to preview
+                setTimeout(() => {
+                    previewSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Analyze button
+        analyzeBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            loading.classList.add('show');
+            previewSection.classList.remove('show');
+            resultsSection.classList.remove('show');
+            errorMessage.classList.remove('show');
+            analyzeBtn.disabled = true;
+            
+            // Reset and animate progress bar
+            progressBar.style.width = '0%';
+            let progress = 0;
+            progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90; // Don't complete until done
+                progressBar.style.width = progress + '%';
+            }, 200);
+
+            // Scroll to loading section smoothly
+            loading.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Complete progress bar
+                if (progressInterval) clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                } else if (data.success) {
+                    // Small delay for smooth transition
+                    setTimeout(() => {
+                        displayResults(data.prediction);
+                        // Scroll to results smoothly
+                        setTimeout(() => {
+                            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    }, 300);
+                } else {
+                    showError('An unexpected error occurred. Please try again.');
+                }
+            } catch (error) {
+                if (progressInterval) clearInterval(progressInterval);
+                progressBar.style.width = '0%';
+                showError('Failed to analyze image. Please check your connection and try again.');
+                console.error('Error:', error);
+            } finally {
+                setTimeout(() => {
+                    loading.classList.remove('show');
+                    analyzeBtn.disabled = false;
+                    previewSection.classList.add('show');
+                    progressBar.style.width = '0%';
+                }, 500);
+            }
+        });
+
+        function displayResults(prediction) {
+            // Display main prediction
+            document.getElementById('predictedDisease').textContent = prediction.predicted_disease;
+            document.getElementById('confidence').textContent = prediction.confidence.toFixed(1) + '%';
+
+            // Display disease information
+            if (prediction.disease_info) {
+                const info = prediction.disease_info;
+                
+                // Description
+                document.getElementById('diseaseDescription').textContent = info.description || 'Information about this condition.';
+
+                // Treatment list
+                const treatmentList = document.getElementById('treatmentList');
+                treatmentList.innerHTML = '';
+                if (info.treatment && info.treatment.length > 0) {
+                    info.treatment.forEach(treatment => {
+                        const li = document.createElement('li');
+                        li.textContent = treatment;
+                        treatmentList.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'Consult a dermatologist for treatment options.';
+                    treatmentList.appendChild(li);
+                }
+
+                // Consult dermatologist
+                const consultMessage = info.consult_derm || 'Please consult a dermatologist for proper diagnosis and treatment.';
+                const generalMessage = 'It is important to see a dermatologist even if you are only slightly worried about a skin condition. Early detection saves lives. ';
+                document.getElementById('consultDerm').textContent = generalMessage + consultMessage;
+
+                // Set urgency styling
+                if (info.urgency === 'high') {
+                    consultSection.classList.add('urgent');
+                } else {
+                    consultSection.classList.remove('urgent');
+                }
+            }
+
+            // Display all predictions
+            predictionsList.innerHTML = '';
+            prediction.all_predictions.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'prediction-item' + (index === 0 ? ' top' : '');
+                div.innerHTML = `
+                    <span class="prediction-disease">${item.disease}</span>
+                    <span class="prediction-confidence">${item.confidence.toFixed(1)}%</span>
+                `;
+                predictionsList.appendChild(div);
+            });
+
+            resultsSection.classList.add('show');
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # DermAI
 
-A web application for dermatological disease classification using deep learning. This application uses a trained Keras model to classify skin conditions from uploaded images.
+A web application for dermatological disease classification using ResNet 50 CNN model. This application uses a tweaked trained model to classify skin conditions from uploaded images.
 
 ## Features
 
